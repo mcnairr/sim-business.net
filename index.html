@@ -1,0 +1,744 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SimBusiness â€” Build any company. Simulate what happens.</title>
+  <meta name="description" content="The AI-powered business simulation that turns your decisions into real outcomes. Design a company, build a team, and run turn-based simulations powered by Claude.">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon_set/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon_set/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon_set/favicon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon_set/favicon-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon_set/favicon-512x512.png">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #081420;
+      --bg2:     #0d1e30;
+      --bg3:     #112438;
+      --card:    #0f2035;
+      --text:    #ddeeff;
+      --text2:   #7aadcc;
+      --text3:   #3d6e90;
+      --cyan:    #22d3ee;
+      --gold:    #f5a623;
+      --green:   #22c55e;
+      --border:  rgba(40, 100, 180, 0.28);
+      --border2: rgba(60, 140, 220, 0.45);
+      --radius:  12px;
+      --font:    -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      --max-w:   1100px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; height: auto; display: block; }
+
+    /* â”€â”€ Buttons â”€â”€ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      text-decoration: none;
+    }
+    .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: var(--cyan);
+      color: #081420;
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--cyan);
+      border: 1.5px solid var(--cyan);
+    }
+    .btn-gold {
+      background: var(--gold);
+      color: #081420;
+    }
+
+    /* â”€â”€ Nav â”€â”€ */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(8, 20, 32, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+    .nav-logo img {
+      width: 32px;
+      height: 32px;
+    }
+
+    .nav-logo span { color: var(--cyan); }
+
+    /* â”€â”€ Hero â”€â”€ */
+    .hero {
+      background: linear-gradient(180deg, #0d1e30 0%, var(--bg) 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-image-wrap {
+      width: 100%;
+      max-height: 420px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-image-wrap img {
+      width: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    .hero-body {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 64px 24px 72px;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      border-radius: 99px;
+      padding: 4px 14px;
+      margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-size: clamp(36px, 6vw, 64px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    .hero-title span { color: var(--cyan); }
+
+    .hero-subtitle {
+      font-size: clamp(16px, 2.5vw, 20px);
+      color: var(--text2);
+      max-width: 640px;
+      margin: 0 auto 36px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .hero-ctas .btn { min-width: 160px; padding: 14px 32px; font-size: 16px; }
+
+    .hero-note {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--text3);
+    }
+
+    /* â”€â”€ Section Shared â”€â”€ */
+    section {
+      padding: 80px 24px;
+    }
+
+    .section-inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(26px, 4vw, 40px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .section-subtitle {
+      font-size: 17px;
+      color: var(--text2);
+      max-width: 580px;
+      margin-bottom: 52px;
+    }
+
+    /* â”€â”€ How It Works â”€â”€ */
+    .how {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      position: relative;
+    }
+
+    .step-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(34, 211, 238, 0.12);
+      border: 1.5px solid rgba(34, 211, 238, 0.4);
+      color: var(--cyan);
+      font-weight: 700;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .step-icon {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .step h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .step p {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.6;
+    }
+
+    /* â”€â”€ Why SimBusiness â”€â”€ */
+    .why { background: var(--bg); }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .benefit {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      transition: border-color 0.2s;
+    }
+
+    .benefit:hover {
+      border-color: var(--border2);
+    }
+
+    .benefit-icon {
+      font-size: 26px;
+      margin-bottom: 14px;
+    }
+
+    .benefit h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .benefit p {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.6;
+    }
+
+    /* â”€â”€ Screenshots â”€â”€ */
+    .screenshots {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .screenshot-showcase {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border2);
+      box-shadow: 0 8px 48px rgba(0, 0, 0, 0.6);
+    }
+
+    .screenshot-showcase img {
+      width: 100%;
+      display: block;
+    }
+
+    .screenshot-caption {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--text3);
+    }
+
+    /* â”€â”€ Pricing â”€â”€ */
+    .pricing { background: var(--bg); }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px;
+      max-width: 780px;
+    }
+
+    .pricing-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+    }
+
+    .pricing-card.featured {
+      border-color: var(--cyan);
+      background: linear-gradient(145deg, #0f2035 0%, #112c42 100%);
+      position: relative;
+    }
+
+    .pricing-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--cyan);
+      color: #081420;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 14px;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+
+    .pricing-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text2);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .pricing-price {
+      font-size: 40px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .pricing-price span {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text3);
+    }
+
+    .pricing-desc {
+      font-size: 13px;
+      color: var(--text3);
+      margin-bottom: 28px;
+    }
+
+    .pricing-features {
+      list-style: none;
+      margin-bottom: 32px;
+    }
+
+    .pricing-features li {
+      font-size: 14px;
+      color: var(--text2);
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pricing-features li:last-child { border-bottom: none; }
+
+    .pricing-features li::before {
+      content: 'âœ“';
+      color: var(--green);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* â”€â”€ Final CTA â”€â”€ */
+    .final-cta {
+      background: linear-gradient(135deg, #0d1e30 0%, #112c42 100%);
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .final-cta .section-title { margin-bottom: 12px; }
+    .final-cta .section-subtitle { margin: 0 auto 36px; }
+
+    /* â”€â”€ Footer â”€â”€ */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+    }
+
+    .footer-inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-logo {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text2);
+    }
+
+    .footer-logo span { color: var(--cyan); }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text3);
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover { color: var(--text2); }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text3);
+    }
+
+    /* â”€â”€ Responsive â”€â”€ */
+    @media (max-width: 768px) {
+      section { padding: 56px 20px; }
+
+      .steps {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 440px;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .benefits-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-ctas .btn {
+        width: 100%;
+        min-width: unset;
+      }
+
+      .hero-ctas { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- â”€â”€ Navigation â”€â”€ -->
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-logo" href="/">
+        <img src="assets/favicon_set/favicon-32x32.png" alt="SimBusiness icon">
+        Sim<span>Business</span>
+      </a>
+      <a class="btn btn-outline" id="nav-signin" href="#">Sign In</a>
+    </div>
+  </nav>
+
+  <!-- â”€â”€ Hero â”€â”€ -->
+  <section class="hero" style="padding: 0;">
+    <div class="hero-image-wrap">
+      <img src="assets/images/SimBusinessHeader.png" alt="SimBusiness â€” AI-powered business simulation">
+    </div>
+    <div class="hero-body">
+      <div class="hero-eyebrow">AI-Powered Business Simulation</div>
+      <h1 class="hero-title">
+        Build any company.<br><span>Simulate what happens.</span>
+      </h1>
+      <p class="hero-subtitle">
+        Design a business, hire a team, make real decisions â€” and run the simulation to see exactly how your strategy holds up. Every turn tells a story. Every choice has a consequence.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" id="hero-signup" href="#">Play Free</a>
+        <a class="btn btn-outline" id="hero-signin" href="#">Sign In</a>
+      </div>
+      <p class="hero-note">Free turn every day &mdash; no credit card required</p>
+    </div>
+  </section>
+
+  <!-- â”€â”€ How It Works â”€â”€ -->
+  <section class="how">
+    <div class="section-inner">
+      <p class="section-label">Get Started in Minutes</p>
+      <h2 class="section-title">Three steps to your first simulation</h2>
+      <p class="section-subtitle">No setup. No tutorial grind. Just describe your business and start making decisions.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-icon">ðŸ¢</div>
+          <h3>Design Your Business</h3>
+          <p>Describe your company in plain English â€” or pick from a preset. The AI structures your business model, names your inventory, and scales your starting capital in seconds.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-icon">ðŸ‘¥</div>
+          <h3>Build Your Team</h3>
+          <p>Create employees, assign roles, and set salaries. Every hire shapes your company's capacity, morale, and operating costs. Underpay and you'll feel it.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-icon">â–¶</div>
+          <h3>Run the Simulation</h3>
+          <p>Set prices, stock inventory, assign tasks â€” then hit Run Turn. A deterministic engine handles the math while AI generates your narrative, events, and employee behavior.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- â”€â”€ Why SimBusiness â”€â”€ -->
+  <section class="why">
+    <div class="section-inner">
+      <p class="section-label">What Makes SimBusiness Different</p>
+      <h2 class="section-title">Business intuition is learned by doing</h2>
+      <p class="section-subtitle">SimBusiness puts you in the decision seat â€” with real consequences, real financials, and an AI that thinks like your team.</p>
+
+      <div class="benefits-grid">
+        <div class="benefit">
+          <div class="benefit-icon">ðŸ“Š</div>
+          <h3>Real Decisions, Real Consequences</h3>
+          <p>Every choice â€” price, inventory, staffing, strategy â€” produces measurable downstream effects on your financials and team. No abstract sliders. No hand-holding.</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">ðŸ¤–</div>
+          <h3>AI That Thinks Like Your Employees</h3>
+          <p>Claude generates authentic employee behavior, realistic business events, and narrative turn reports that read like a real day at work. Your team reacts to how you treat them.</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">ðŸŒ</div>
+          <h3>Any Business, Any Scale</h3>
+          <p>Hot dog stand to tech startup. Food truck to logistics firm. Describe it and the AI builds it â€” custom inventory, market dynamics, and a team that fits your industry.</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">ðŸ§ </div>
+          <h3>Build Intuition You Can Use</h3>
+          <p>Replay turns with different decisions. Test pricing strategies. Experiment with staffing. SimBusiness builds the pattern recognition that experience teaches â€” at simulation speed.</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">ðŸ“ˆ</div>
+          <h3>Full Financial Visibility</h3>
+          <p>Live COGS, gross margins, cash flow, and salary market rates are always visible. You see exactly why your business is profitable â€” or why it isn't.</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">ðŸ“…</div>
+          <h3>Pick Up Where You Left Off</h3>
+          <p>Every turn is saved as an immutable snapshot. Your full history is reviewable. Come back tomorrow and your business is exactly where you left it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- â”€â”€ Screenshots â”€â”€ -->
+  <section class="screenshots">
+    <div class="section-inner">
+      <p class="section-label">See It in Action</p>
+      <h2 class="section-title">A full business console in your browser</h2>
+      <p class="section-subtitle">Team morale, market gauges, live financials, and AI-generated events â€” all visible at once, no tab-switching required.</p>
+
+      <div class="screenshot-showcase">
+        <img src="assets/images/SimBusinessNeighborhood.png" alt="SimBusiness console â€” team sidebar, market data, and live financials">
+      </div>
+      <p class="screenshot-caption">The full console view: team sidebar with morale/burnout bars, center decision panel, and live market data â€” all in one screen.</p>
+    </div>
+  </section>
+
+  <!-- â”€â”€ Pricing â”€â”€ -->
+  <section class="pricing">
+    <div class="section-inner">
+      <p class="section-label">Pricing</p>
+      <h2 class="section-title">Start free. Scale as you go.</h2>
+      <p class="section-subtitle">One free simulation turn every day â€” no credit card, no trial period. Buy credit packs when you want more.</p>
+
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <div class="pricing-name">Free</div>
+          <div class="pricing-price">$0 <span>/ forever</span></div>
+          <div class="pricing-desc">No credit card required</div>
+          <ul class="pricing-features">
+            <li>1 free simulation turn per day</li>
+            <li>Any business type</li>
+            <li>Full AI narrative and events</li>
+            <li>Save and resume anytime</li>
+            <li>Complete historical timeline</li>
+          </ul>
+          <a class="btn btn-outline" id="pricing-free" href="#" style="width: 100%; justify-content: center;">Get Started Free</a>
+        </div>
+
+        <div class="pricing-card featured">
+          <div class="pricing-badge">Most Popular</div>
+          <div class="pricing-name">Credit Packs</div>
+          <div class="pricing-price">Pay <span>as you go</span></div>
+          <div class="pricing-desc">Credits never expire</div>
+          <ul class="pricing-features">
+            <li>Buy turns in flexible packs</li>
+            <li>No subscription required</li>
+            <li>Same full AI experience</li>
+            <li>Credits never expire</li>
+            <li>Run as many turns as you want</li>
+          </ul>
+          <a class="btn btn-primary" id="pricing-credits" href="#" style="width: 100%; justify-content: center;">View Credit Packs</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- â”€â”€ Final CTA â”€â”€ -->
+  <section class="final-cta">
+    <div class="section-inner">
+      <h2 class="section-title">Ready to build your business?</h2>
+      <p class="section-subtitle">Your first turn is free. No setup, no credit card â€” just describe a business and start making decisions.</p>
+      <a class="btn btn-gold" id="final-signup" href="#" style="font-size: 17px; padding: 16px 40px;">Play Free Today</a>
+    </div>
+  </section>
+
+  <!-- â”€â”€ Footer â”€â”€ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">Sim<span>Business</span></div>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a id="footer-app" href="#">Play</a>
+        <a id="footer-signin" href="#">Sign In</a>
+        <a id="footer-signup" href="#">Sign Up</a>
+      </nav>
+      <p class="footer-copy">&copy; 2026 SimBusiness. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script>
+    (function () {
+      var cfg = window.SimBusinessConfig || {};
+      var appUrl = (cfg.appUrl || '').replace(/\/$/, '');
+      var signIn = appUrl + (cfg.signInPath || '/');
+      var signUp = appUrl + (cfg.signUpPath || '/signup');
+
+      var links = {
+        'nav-signin':      signIn,
+        'hero-signup':     signUp,
+        'hero-signin':     signIn,
+        'pricing-free':    signUp,
+        'pricing-credits': signUp,
+        'final-signup':    signUp,
+        'footer-app':      appUrl,
+        'footer-signin':   signIn,
+        'footer-signup':   signUp
+      };
+
+      Object.keys(links).forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.href = links[id];
+      });
+    })();
+  </script>
+</body>
+</html>
+
